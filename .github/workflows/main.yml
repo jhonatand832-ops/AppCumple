@@ -3,7 +3,7 @@ on: [push]
 
 jobs:
   build:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
@@ -22,20 +22,18 @@ jobs:
       - name: Build APK
         run: |
           export PATH=$PATH:$HOME/.local/bin
-          # Esto acepta las licencias de Android de forma silenciosa antes de empezar
-          mkdir -p ~/.android && touch ~/.android/repositories.cfg
+          # Forzamos a Buildozer a que no use versiones experimentales
           buildozer android clean
-          # Ejecutamos sin el comando "yes" para evitar el Broken Pipe
-          buildozer -v android debug --p
+          yes | buildozer -v android debug
         env:
-          # Esto obliga a buildozer a aceptar licencias automáticamente
-          APP_ANDROID_ACCEPT_SDK_LICENSE: "1"
+          # Esto ayuda a saltar errores de descarga de Google
+          ACCEPT_SDK_LICENSE: "y"
 
       - name: Upload APK
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: AppFelicidades
+          name: AppFinal
           path: bin/*.apk
 
 
