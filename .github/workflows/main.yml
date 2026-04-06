@@ -3,11 +3,21 @@ on: [push]
 
 jobs:
   build:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - name: Build with Buildozer
-        uses: Enenkel/buildozer-action@v0.0.2
+        # Usamos el autor correcto: ArtemSBulgakov
+        uses: ArtemSBulgakov/buildozer-action@v1
+        id: buildozer
         with:
           command: buildozer android debug
+          buildozer_version: master
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: package
+          # Esto guarda el archivo APK para que lo descargues
+          path: ${{ steps.buildozer.outputs.filename }}
+
 
