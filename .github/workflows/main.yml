@@ -7,7 +7,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Build with Buildozer
-        uses: ArtemSBulgakov/buildozer-action@v1
+        # Cambiamos a esta versión que es más estable para permisos
+        uses: FarasAtmani/buildozer-action@v2
         id: buildozer
         with:
           command: buildozer android debug
@@ -17,6 +18,8 @@ jobs:
         with:
           name: package
           path: ${{ steps.buildozer.outputs.filename }}
+
+
 
 
 
