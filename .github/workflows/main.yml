@@ -3,21 +3,26 @@ on: [push]
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
-      - name: Build with Buildozer
-        # Cambiamos a esta versión que es más estable para permisos
-        uses: FarasAtmani/buildozer-action@v2
-        id: buildozer
-        with:
-          command: buildozer android debug
-          buildozer_version: master
-      - name: Upload artifacts
+
+      - name: Instalando dependencias
+        run: |
+          sudo apt update
+          sudo apt install -y git zip unzip openjdk-17-jdk python3-pip autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libtinfo5 cmake libffi-dev libssl-dev
+          pip3 install --user --upgrade Cython==0.29.33 buildozer
+
+      - name: Fabricando APK (Paciencia...)
+        run: |
+          export PATH=$PATH:$HOME/.local/bin
+          yes | buildozer -v android debug
+
+      - name: Subir APK terminada
         uses: actions/upload-artifact@v4
         with:
-          name: package
-          path: ${{ steps.buildozer.outputs.filename }}
+          name: MiAppCumple
+          path: bin/*.apk
 
 
 
