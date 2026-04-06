@@ -5,19 +5,18 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Build with Buildozer
-        # Usamos el autor correcto: ArtemSBulgakov
         uses: ArtemSBulgakov/buildozer-action@v1
         id: buildozer
         with:
           command: buildozer android debug
           buildozer_version: master
       - name: Upload artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: package
-          # Esto guarda el archivo APK para que lo descargues
           path: ${{ steps.buildozer.outputs.filename }}
+
 
 
