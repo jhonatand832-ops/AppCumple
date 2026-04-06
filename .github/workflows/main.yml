@@ -7,22 +7,37 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Instalando dependencias
+      - name: Setup Java 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Install Dependencies
         run: |
           sudo apt update
-          sudo apt install -y git zip unzip openjdk-17-jdk python3-pip autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libtinfo5 cmake libffi-dev libssl-dev
+          sudo apt install -y python3-pip build-essential git python3 python3-dev ffmpeg libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libsdl2-ttf-dev libportmidi-dev libswscale-dev libavformat-dev libavcodec-dev zlib1g-dev libgstreamer1.0 gstreamer1.0-plugins-base gstreamer1.0-plugins-good libffi-dev libssl-dev libmtdev-dev xclip xsel libjpeg-dev
           pip3 install --user --upgrade Cython==0.29.33 buildozer
 
-      - name: Fabricando APK (Paciencia...)
+      - name: Build APK
         run: |
           export PATH=$PATH:$HOME/.local/bin
-          yes | buildozer -v android debug
+          # Esto acepta las licencias de Android de forma silenciosa antes de empezar
+          mkdir -p ~/.android && touch ~/.android/repositories.cfg
+          buildozer android clean
+          # Ejecutamos sin el comando "yes" para evitar el Broken Pipe
+          buildozer -v android debug --p
+        env:
+          # Esto obliga a buildozer a aceptar licencias automáticamente
+          APP_ANDROID_ACCEPT_SDK_LICENSE: "1"
 
-      - name: Subir APK terminada
+      - name: Upload APK
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: MiAppCumple
+          name: AppFelicidades
           path: bin/*.apk
+
 
 
 
